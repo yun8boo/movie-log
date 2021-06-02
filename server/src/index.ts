@@ -1,4 +1,5 @@
 import { ApolloServer, IResolvers } from 'apollo-server'
+import * as fs from 'fs'
 
 let links = [{
   id: 'link-0',
@@ -6,24 +7,24 @@ let links = [{
   url: 'www.howtographql.com',
 }]
 
-const typeDefs = `
-  type Query {
-    info: String!
-    feed: [Link]!
-  }
-
-  type Link {
-    id: ID!
-    description: String!
-    url: String!
-  }
-`
+let idCount = links.length
 
 const resolvers: IResolvers<any, any> | IResolvers<any, any>[]
 = {
   Query: {
     info: () => `This is the API of a Hackernews Clone`,
     feed: () => links,
+  },
+  Mutation: {
+    post: (parent, args) => {
+      const link = {
+        id: `link-${idCount++}`,
+        description: args.description,
+        url: args.url,
+      }
+      links.push(link)
+      return link
+    }
   },
   Link: {
     id: (parent) => parent.id,
@@ -32,8 +33,11 @@ const resolvers: IResolvers<any, any> | IResolvers<any, any>[]
   }
 }
 
+// readFileSyncに渡しているパスはnodeが起動したときの位置になる？
+const typeDefs = fs.readFileSync("../schema.graphql", { encoding: "utf8" });
+
 const server = new ApolloServer({
-  typeDefs,
+  typeDefs: typeDefs,
   resolvers
 })
 
