@@ -1,15 +1,31 @@
-type Query {
-  
+type Query {  
   info: String!
-  feed: [Link!]!
+  movieLogs: [MovieLog!]!
 }
 
 type Mutation {
-  post(url: String!, description: String!): Link!
+  post(title: String!, content: String!): MovieLog!
+  signup(email: String!m password: String, name: String): AuthPayload
+  login(email: String!, password: String!): AuthPayload
 }
 
-type Link {
+type MovieLog {
   id: ID!
-  description: String!
-  url: String!
+  createdAt: String!
+  updatedAt: String!
+  title: String!
+  content: String!
+  author: User
+}
+
+type AuthPayload {
+  token: String
+  user: User
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String
+  movieLogs: [MovieLog!]!
 }
